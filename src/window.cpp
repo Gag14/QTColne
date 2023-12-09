@@ -51,6 +51,21 @@ namespace QTC
         // Flush the X server connection
         XFlush(display_);
         std::cout << "!after flush\n";
+        try {
+        eventLoopThread_ = std::thread([this]()
+                                       {
+        XEvent event;
+        std::cout << "from thread window" << std::endl;
+        while (true)
+        {
+            // XNextEvent(display_, &event);
+            // draw();
+            // handleClick(event);
+        } });
+        } catch (const std::exception& e) 
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
 
     // Constructor with title
@@ -259,6 +274,32 @@ namespace QTC
         XSetStandardProperties(display_, window_, title.c_str(), title.c_str(), None, NULL, 0, NULL);
         XFlush(display_);
     }
+    void QWindow::redraw()
+    {
+        // Put your drawing logic here
+        // For example, you can clear the window and draw a rectangle
+        XClearWindow(display_, window_);
+
+        // Draw a rectangle
+        XDrawRectangle(display_, window_, DefaultGC(display_, DefaultScreen(display_)), 50, 50, 100, 100);
+
+        // Flush the changes to the display
+        XFlush(display_);
+    }
+    void QWindow::handleEvent(XEvent &event)
+    {
+        switch (event.type)
+        {
+        case Expose:
+            // Handle expose event, e.g., redraw the window
+            redraw();
+            break;
+        case KeyPress:
+            // Handle key press event, if needed
+            break;
+            // Add more cases to handle other events as necessary
+        }
+    }
 
     // Destructor
     QWindow::~QWindow()
@@ -269,6 +310,9 @@ namespace QTC
             // XFreeGC(display_, gc_);
             XCloseDisplay(display_);
         }
+        if (eventLoopThread_.joinable())
+            eventLoopThread_.join();
+  
     }
     // Main Interface Functions
 
@@ -353,6 +397,11 @@ namespace QTC
     // Set the background color of the window using a color name
     void QWindow::setBackgroundColor(const std::string &backgroundcolor)
     {
+        if (!display_)
+        {
+            std::cout << "Nullll" << std::endl;
+            throw std::runtime_error("Display NULL");
+        }
         // Clear the window
         XClearWindow(display_, window_);
 
@@ -528,4 +577,6 @@ namespace QTC
             }
         }
     }
+    Window QTC::QWindow::getWindow() { return window_; }
+    Display *QTC::QWindow::getDisplay() { return display_; }
 }

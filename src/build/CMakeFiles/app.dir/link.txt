@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/app.dir/window.cpp.o CMakeFiles/app.dir/color.cpp.o CMakeFiles/app.dir/main.cpp.o -o app  -lfreetype -lXft -lX11 

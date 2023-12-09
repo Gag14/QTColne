@@ -1,57 +1,51 @@
 #include <iostream>
 #include "window.h"
 #include "color.h"
+#include "button.h"
 
 #include <thread>
 #include <chrono>
 
-void sleep(int seconds)
+void green(QTC::QWindow *w)
 {
-  std::this_thread::sleep_for(std::chrono::seconds(seconds));
+  std::cout << "green" << std::endl;
+  w->setBackgroundColor("green");
+  // w->setTitle("Artur");
 }
+
+void red(QTC::QWindow *w)
+{
+  std::cout << "red" << std::endl;
+  w->setBackgroundColor("red");
+  // w->setTitle("");
+}
+
 int main()
- {
-//   QTC::Color c;
-//   c.setAsRed();
-//   QTC::QWindow x("Title", c);
-//   sleep(7);
+{
+
   QTC::QWindow w;
-  // QTC::QWindow* t = new QTC::QWindow();
-  sleep(1);
-  w.close();
-  sleep(4);
-  w.open();
-  w.resize(200, 300);
-  sleep(4);
-  // w.minimize();
-  // sleep(4);
-  // w.restore();
-  // sleep(1);
-  w.MoveWindow(500, 0);
-  sleep(1);
-  w.MoveWindow(0, 500);
-  sleep(1);
-  w.MoveWindow(-500, 0);
-  sleep(1);
-  w.MoveWindow(0, 500);
-  sleep(1);
-  w.maximize();
-  w.setBackgroundColor("red");
-  std::cout << "Now red\n";
-  sleep(2);
-  w.setBackgroundColor("green");
-  std::cout << "Now green\n";
-  sleep(2);
-  w.setBackgroundColor("blue");
-  std::cout << "Now green\n";
-  sleep(2);
-  w.setTitle("Window m");
-  QTC::Color c(65000, 0, 0);
+  QTC::QWindow *wp = &w;
+  QTC::Button b(wp, 100, 0, "red");
+  QTC::Color c;
   c.setAsRed();
- // w.setTitleColor(c);
-  sleep(2);
-  w.setBackgroundColor("black");
-  // w.showMessage("BYE", 100, 100);
-  //w.showMessage("Hello, X11!", 50, 50, "fixed", 70);
-  sleep(5);
+  b.setColor(c);
+  b.setClickFunction(&red, wp);
+  QTC::Button b2(wp, 0, 0, "green");
+  c.setAsGreen();
+  b2.setColor(c);
+  c.setAsGreen();
+  b.serBorderColor(c);
+  b2.setClickFunction(&green, wp);
+  wp->open();
+
+  XEvent event;
+  while (true)
+  {
+    XNextEvent(wp->getDisplay(), &event);
+    b.draw();
+    b2.draw();
+
+    b.handleClick(event);
+    b2.handleClick(event);
+  }
 }

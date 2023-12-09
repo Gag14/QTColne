@@ -1,0 +1,3 @@
+/home/gag/lab/QTColne/src/build/CMakeFiles/app.dir
+/home/gag/lab/QTColne/src/build/CMakeFiles/edit_cache.dir
+/home/gag/lab/QTColne/src/build/CMakeFiles/rebuild_cache.dir
